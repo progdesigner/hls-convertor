@@ -191,7 +191,7 @@ function help() {
   echo "Animation Generator ${VERSION}"
   echo "Copyright: © 2019 ProgDesigner."
   echo "MIT License"
-  echo "Usage: gripg [options ...] file [ [options ...] file ...] [options ...] file"
+  echo "Usage: grip generate [options ...] file [ [options ...] file ...] [options ...] file"
   echo ""
   echo "Options Settings:"
   echo "  -s|--source             source path"
@@ -206,47 +206,13 @@ function help() {
   echo ""
 }
 
-function execute() {
+function generate() {
   COMMAND=$1
   shift
 
   ARGS=$@
 
   case ${COMMAND} in
-    install)
-
-      if command -v grip > /dev/null; then
-        echo "grip is installed"
-        exit 0
-      fi
-
-      # if command -v brew > /dev/null; then
-      #   echo "brew is installed"
-      # else
-      #   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null
-      # fi
-      #
-      # if brew ls --versions webp > /dev/null; then
-      #   echo "WebP is installed"
-      # else
-      #   brew install webp
-      # fi
-      #
-      # if brew ls --versions imagemagick > /dev/null; then
-      #   echo "ImageMagick is installed"
-      # else
-      #   brew install webp imagemagick
-      # fi
-
-      cli_update
-      cd "/usr/local/bin"
-      ln -s "../Cellar/animation-generator/bin/generator.sh" grip
-    ;;
-
-    update)
-      cli_update
-    ;;
-
     gif)
       before_convert
 
@@ -273,6 +239,21 @@ function execute() {
 
       # Open Folder
       open -a "Finder" "${PATH_DIST}"
+    ;;
+
+    *)
+      help
+    ;;
+  esac
+}
+
+function execute() {
+  COMMAND=$1
+  shift
+
+  case ${COMMAND} in
+    generate)
+      generate $@
     ;;
 
     *)
