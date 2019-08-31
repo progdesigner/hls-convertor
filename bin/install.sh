@@ -1,6 +1,7 @@
 #/bin/bash
 
 # EXECUTE: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/progdesigner/animation-generator/master/bin/install.sh)"
+# EXECUTE: /bin/bash -c "$(curl -fsSL https://www.progdesigner.com/install.sh)"
 
 PATH_LIB="/usr/local/Cellar"
 PATH_BIN="/usr/local/bin"
@@ -59,7 +60,7 @@ function execute() {
   fi
 
   rm -rf ${PATH_LIB}/${LIB_NAME}
-  rm -rf ${PATH_BIN}/${APP_NAME}
+  rm ${PATH_BIN}/${APP_NAME}
   mkdir -p ${PATH_LIB}/${LIB_NAME}
   cd ${PATH_LIB}
   git clone git@github.com:progdesigner/animation-generator.git ${LIB_NAME}
