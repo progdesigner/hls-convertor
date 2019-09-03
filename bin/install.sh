@@ -63,7 +63,7 @@ function execute() {
   rm ${PATH_BIN}/${APP_NAME}
   mkdir -p ${PATH_LIB}/${LIB_NAME}
   cd ${PATH_LIB}
-  git clone git@github.com:progdesigner/animation-generator.git ${LIB_NAME}
+  git clone https://github.com/progdesigner/animation-generator.git ${LIB_NAME}
 
   # rsync -av "${PATH_BASE}/" "/usr/local/Cellar/animation-generator/" --exclude=dist --exclude=src --exclude=.git --exclude=.gitignore
 
