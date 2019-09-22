@@ -29,6 +29,53 @@ function before_convert() {
   mkdir -p ${PATH_SRC}
 }
 
+function convert_hls() {
+
+  echo "Convert MP4 to HLS" $@
+
+  # Default Options
+  FILE_SOURCE="input.mp4"
+  FILE_DIST=""
+  BACKGROUND=""
+  DELAY=0
+  ARGS=()
+
+  while [[ $# -gt 0 ]]
+  do
+    PARAM="$1"
+    case $PARAM in
+        -s|--source)
+          FILE_SOURCE="$2"
+          shift # past argument
+          shift # past value
+        ;;
+
+        -o|--dist)
+          FILE_DIST="$2"
+          shift # past argument
+          shift # past value
+        ;;
+
+        *)    # unknown option
+          ARGS+=($1)
+          shift # past argument
+        ;;
+    esac
+  done
+
+  # Create Backup
+  if [ -e "${PATH_DIST}/${FILE_DIST}/index.m3u8" ]; then
+    rm -rf "${PATH_DIST}/${FILE_DIST}.backup"
+    mv ${PATH_DIST}/${FILE_DIST} "${PATH_DIST}/${FILE_DIST}.backup"
+  fi
+
+  # Generate HLS
+  echo "Generating HLS..."
+  # info: https://www.keycdn.com/support/how-to-convert-mp4-to-hls
+  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -profile:v baseline -level 3.0 -s 640x360 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls "${PATH_DIST}/${FILE_DIST}"
+  echo "Generated HLS"
+}
+
 function convert_gif() {
 
   echo "Convert PNGs to GIF" $@
@@ -182,20 +229,22 @@ function convert_webp() {
 }
 
 function cli_update() {
-  mkdir -p "/usr/local/Cellar/animation-generator"
-  rsync -av "${PATH_BASE}/" "/usr/local/Cellar/animation-generator/" --exclude=dist --exclude=src --exclude=.git --exclude=.gitignore
-  chmod +x "/usr/local/Cellar/animation-generator/bin/generator.sh"
+  mkdir -p "/usr/local/Cellar/hls-generator"
+  rsync -av "${PATH_BASE}/" "/usr/local/Cellar/hls-generator/" --exclude=dist --exclude=src --exclude=.git --exclude=.gitignore
+  chmod +x "/usr/local/Cellar/hls-generator/bin/generator.sh"
 }
 
 function help() {
   echo "Animation Generator ${VERSION}"
   echo "Copyright: © 2019 ProgDesigner."
   echo "MIT License"
-  echo "Usage: grip generate [options ...] file [ [options ...] file ...] [options ...] file"
+  echo "Usage: mcl generate [options ...] file [ [options ...] file ...] [options ...] file"
   echo ""
   echo "Options Settings:"
   echo "  -s|--source             source path"
   echo "  -o|--dist               distribution path"
+  echo ""
+  echo "  [image]"
   echo "  -d|--delay value        display the next image after pausing"
   echo "  -q|--quality value      specify the compression factor between 0 and 100. The default is 75."
   echo "  -b|--background color   background color"
@@ -231,11 +280,10 @@ function generate() {
       open -a "Finder" "${PATH_DIST}"
     ;;
 
-    all)
+    hls)
       before_convert
 
-      convert_webp $ARGS
-      convert_gif $ARGS
+      convert_hls $ARGS
 
       # Open Folder
       open -a "Finder" "${PATH_DIST}"
