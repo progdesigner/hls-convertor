@@ -114,6 +114,9 @@ function upload_hls() {
     exit 0
   fi
 
+  # @TODO: 인증 체크 구현
+
+
   cd ${PATH_DIST}
 
   echo "Uploading..."
