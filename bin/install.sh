@@ -1,7 +1,6 @@
 #/bin/bash
 
 # EXECUTE: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/progdesigner/hls-convertor/master/bin/install.sh)"
-# EXECUTE: /bin/bash -c "$(curl -fsSL https://www.progdesigner.com/install.sh)"
 
 PATH_LIB="/usr/local/Cellar"
 PATH_BIN="/usr/local/bin"
