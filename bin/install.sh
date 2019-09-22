@@ -66,6 +66,12 @@ function execute() {
     brew install ffmpeg --with-fdk-aac --with-tools
   fi
 
+  if command -v youtube-dl > /dev/null; then
+    echo "youtube-dl is installed"
+  else
+    /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null
+  fi
+
   rm -rf ${PATH_LIB}/${LIB_NAME}
   rm ${PATH_BIN}/${APP_NAME}
   mkdir -p ${PATH_LIB}/${LIB_NAME}

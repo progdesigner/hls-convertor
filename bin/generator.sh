@@ -72,7 +72,7 @@ function convert_hls() {
   # Generate HLS
   echo "Generating HLS..."
   # info: https://www.keycdn.com/support/how-to-convert-mp4-to-hls
-  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -profile:v baseline -level 3.0 -s 640x360 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls "${PATH_DIST}/${FILE_DIST}"
+  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls "${PATH_DIST}/${FILE_DIST}/index.m3u8"
   echo "Generated HLS"
 }
 
@@ -302,6 +302,10 @@ function execute() {
   case ${COMMAND} in
     generate)
       generate $@
+    ;;
+
+    update)
+      cli_update
     ;;
 
     *)
