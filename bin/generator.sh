@@ -70,9 +70,14 @@ function convert_hls() {
   fi
 
   # Generate HLS
-  echo "Generating HLS..."
+  echo "Generating HLS......"
   # info: https://www.keycdn.com/support/how-to-convert-mp4-to-hls
-  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls "${PATH_DIST}/${FILE_DIST}/index.m3u8"
+
+  mkdir -p "${PATH_DIST}/${FILE_DIST}"
+  cd ${PATH_DIST}/${FILE_DIST}
+  pwd
+
+  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls index.m3u8
   echo "Generated HLS"
 }
 
@@ -230,7 +235,7 @@ function convert_webp() {
 
 function cli_update() {
   mkdir -p "/usr/local/Cellar/hls-generator"
-  rsync -av "${PATH_BASE}/" "/usr/local/Cellar/hls-generator/" --exclude=dist --exclude=src --exclude=.git --exclude=.gitignore
+  rsync -av ./ /usr/local/Cellar/hls-generator/ --exclude=dist --exclude=src --exclude=.git --exclude=.gitignore
   chmod +x "/usr/local/Cellar/hls-generator/bin/generator.sh"
 }
 
