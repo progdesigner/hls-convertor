@@ -81,6 +81,53 @@ function convert_hls() {
   echo "Generated HLS"
 }
 
+function upload_hls() {
+
+  echo "Upload HLS" $@
+
+  # Default Options
+  FILE_SOURCE="input.mp4"
+  EPISODE=""
+  RSYNC_EXCLUDE="--exclude=.git --exclude=.DS_Store"
+
+  ARGS=()
+
+  while [[ $# -gt 0 ]]
+  do
+    PARAM="$1"
+    case $PARAM in
+        -e|--episode)
+          EPISODE="$2"
+          shift # past argument
+          shift # past value
+        ;;
+
+        *)    # unknown option
+          ARGS+=($1)
+          shift # past argument
+        ;;
+    esac
+  done
+
+  if [ -e !"${PATH_DIST}/${EPISODE}/index.m3u8" ]; then
+    echo "Not Found HLS Files"
+    exit 0
+  fi
+
+  cd ${PATH_DIST}
+
+  echo "Uploading..."
+
+  aws --profile collabo s3 sync "./${EPISODE}/" "s3://collabo-resource/uploaded/episode/${EPISODE}" ${RSYNC_EXCLUDE} --acl public-read
+
+  echo "Uploaded"
+  echo ""
+  echo "S3 Link"
+  echo "https://collabo-resource.s3.ap-northeast-2.amazonaws.com/uploaded/episode/${EPISODE}/index.m3u8"
+  echo ""
+
+}
+
 function convert_gif() {
 
   echo "Convert PNGs to GIF" $@
@@ -307,6 +354,10 @@ function execute() {
   case ${COMMAND} in
     generate)
       generate $@
+    ;;
+
+    upload)
+      upload_hls $@
     ;;
 
     update)
