@@ -37,6 +37,7 @@ function convert_hls() {
   FILE_SOURCE="input.mp4"
   FILE_DIST=""
   BACKGROUND=""
+  CODEC=""
   DELAY=0
   ARGS=()
 
@@ -52,6 +53,12 @@ function convert_hls() {
 
         -o|--dist)
           FILE_DIST="$2"
+          shift # past argument
+          shift # past value
+        ;;
+
+        -c|--codec)
+          CODEC="$2"
           shift # past argument
           shift # past value
         ;;
@@ -77,7 +84,12 @@ function convert_hls() {
   cd ${PATH_DIST}/${FILE_DIST}
   pwd
 
-  ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -start_number 0 -hls_time 10 -hls_list_size 0 -f hls index.m3u8
+  if [ "${CODEC}" != "" ]; then
+    ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -c:a copy -c:v ${CODEC} -start_number 0 -hls_time 1 -hls_list_size 0 -f hls index.m3u8
+  else
+    ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -bsf:v h264_mp4toannexb -start_number 0 -hls_time 1 -hls_list_size 0 -f hls index.m3u8
+  fi
+
   echo "Generated HLS"
 }
 
@@ -121,12 +133,12 @@ function upload_hls() {
 
   echo "Uploading..."
 
-  aws --profile collabo s3 sync "./${EPISODE}/" "s3://collabo-resource/uploaded/episode/${EPISODE}" ${RSYNC_EXCLUDE} --acl public-read
+  aws --profile collabo s3 sync "./${EPISODE}/" "s3://collabo-media-live/uploaded/episode/${EPISODE}" ${RSYNC_EXCLUDE} --acl public-read
 
   echo "Uploaded"
   echo ""
   echo "S3 Link"
-  echo "https://collabo-resource.s3.ap-northeast-2.amazonaws.com/uploaded/episode/${EPISODE}/index.m3u8"
+  echo "https://collabo-media-live.s3.ap-northeast-2.amazonaws.com/uploaded/episode/${EPISODE}/index.m3u8"
   echo ""
 
 }
@@ -290,23 +302,17 @@ function cli_update() {
 }
 
 function help() {
-  echo "Animation Generator ${VERSION}"
+  echo "HLS Generator ${VERSION}"
   echo "Copyright: © 2019 ProgDesigner."
   echo "MIT License"
-  echo "Usage: mcl generate [options ...] file [ [options ...] file ...] [options ...] file"
+  echo "Usage: mcl generate [options ...] file [ [options ...] file ...] [options ...]"
   echo ""
   echo "Options Settings:"
   echo "  -s|--source             source path"
   echo "  -o|--dist               distribution path"
   echo ""
-  echo "  [image]"
-  echo "  -d|--delay value        display the next image after pausing"
-  echo "  -q|--quality value      specify the compression factor between 0 and 100. The default is 75."
-  echo "  -b|--background color   background color"
-  echo "                            for example,"
-  echo "                              blue"
-  echo "                              \"#ddddff\""
-  echo "                              \"rgb(255, 255, 255)\""
+  echo "  [hls]"
+  echo "  -c|--codec codec_name   h264"
   echo ""
 }
 
