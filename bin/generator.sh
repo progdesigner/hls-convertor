@@ -1,6 +1,6 @@
 #/bin/bash
 
-VERSION="0.1.1"
+VERSION="0.1.2"
 
 EXEC_FILE="$0"
 BASE_NAME=`basename "$EXEC_FILE"`
