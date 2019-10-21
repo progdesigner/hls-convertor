@@ -38,6 +38,7 @@ function convert_hls() {
   FILE_DIST=""
   BACKGROUND=""
   CODEC=""
+  CRF="21"
   DELAY=0
   ARGS=()
 
@@ -59,6 +60,12 @@ function convert_hls() {
 
         -c|--codec)
           CODEC="$2"
+          shift # past argument
+          shift # past value
+        ;;
+
+        -crf)
+          CRF="$2"
           shift # past argument
           shift # past value
         ;;
@@ -85,7 +92,7 @@ function convert_hls() {
   pwd
 
   if [ "${CODEC}" != "" ]; then
-    ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -c:a copy -c:v ${CODEC} -start_number 0 -hls_time 1 -hls_list_size 0 -f hls index.m3u8
+    ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -c:a copy -c:v ${CODEC} -crf ${CRF} -start_number 0 -hls_time 1 -hls_list_size 0 -f hls index.m3u8
   else
     ffmpeg -i "${PATH_SRC}/${FILE_SOURCE}" -codec: copy -bsf:v h264_mp4toannexb -start_number 0 -hls_time 1 -hls_list_size 0 -f hls index.m3u8
   fi
